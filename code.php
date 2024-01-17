@@ -1,5 +1,7 @@
 <?php
 session_start();
+include 'boot.php';
+
 
 if (isset($_POST['register'])) {
     $first_name = $_POST['first_name'];
@@ -10,10 +12,10 @@ if (isset($_POST['register'])) {
 
     if ($password != $confirm) {
         $_SESSION['error'] = 'Passwords did not match';
-        header("Location: signin.php");
+        header("Location: index.php");
         exit();
     } else {
-        include 'boot.php';
+
 
         $stmt = $pdo->prepare('SELECT * FROM users WHERE email = :email');
         $stmt->execute(['email' => $email]);
@@ -29,7 +31,7 @@ if (isset($_POST['register'])) {
                 $stmt->execute(['first_name' => $first_name, 'last_name' => $last_name, 'email' => $email, 'password' => $hashed_password]);
 
                 $_SESSION['success'] = 'Registration successful';
-                header("Location: index.php");
+                header("Location: create.php");
                 exit();
             } catch (PDOException $e) {
                 $_SESSION['error'] = $e->getMessage();
@@ -37,4 +39,3 @@ if (isset($_POST['register'])) {
         }
     }
 }
-

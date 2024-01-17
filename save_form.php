@@ -7,10 +7,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $displayTexts = $_POST['display_text'];
     $maxPoints = $_POST['max_points'];
 
-    // Get the question_id of the inserted question
+
     $stmt = $pdo->prepare('INSERT INTO questions (`group`, `display_text`, `max_points`) VALUES (?, ?, ?)');
 
-    // Insert each question into the 'questions' table
+
     for ($i = 0; $i < count($groups); $i++) {
         $group = $groups[$i]['group'];
         $displayText = $displayTexts[$i]['display_text'];
