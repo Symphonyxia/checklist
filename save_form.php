@@ -1,5 +1,4 @@
 <?php
-session_start();
 include 'boot.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
