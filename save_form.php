@@ -1,26 +1,36 @@
 <?php
+session_start();
 include 'boot.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (isset($_POST['addform'])) {
     $groups = $_POST['group'];
-    $displayTexts = $_POST['display_text'];
-    $maxPoints = $_POST['max_points'];
+    $display_texts = $_POST['display_text'];
+    $max_points = $_POST['max_points'];
 
 
-    $stmt = $pdo->prepare('INSERT INTO questions (`group`, `display_text`, `max_points`) VALUES (?, ?, ?)');
-
-
-    for ($i = 0; $i < count($groups); $i++) {
-        $group = $groups[$i]['group'];
-        $displayText = $displayTexts[$i]['display_text'];
-        $maxPoint = $maxPoints[$i]['max_points'];
-
-        $stmt->execute([$group, $displayText, $maxPoint]);
+    // Ensure both arrays have the same length
+    if (count($groups) !== count($display_texts)) {
+        $_SESSION['error'] = 'Number of groups and display texts should match';
+        header("Location: form_page.php");
+        exit();
     }
 
-    echo 'Form saved successfully!';
-    header("Location: form_page.php");
-    exit();
-} else {
-    echo 'Invalid request method.';
+    // Use prepared statements and parameter binding for security
+    $stmt = $pdo->prepare('INSERT INTO questions (`group`, `display_text`, `max_points`) VALUES (:group, :display_text, :max_points)');
+
+    try {
+        // Insert each question into the database
+        for ($i = 0; $i < count($groups); $i++) {
+            $stmt->execute(['group' => $groups[$i], 'display_text' => $display_texts[$i], 'max_points' => $max_points[$i]]);
+        }
+
+        $_SESSION['success'] = 'Questions added successfully';
+        header("Location: form_page.php");
+        exit();
+    } catch (PDOException $e) {
+        $_SESSION['error'] = 'Error: ' . $e->getMessage();
+        header("Location: form_page.php");
+        exit();
+    }
 }
+?>
