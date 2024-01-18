@@ -76,6 +76,7 @@ include 'header.php';
         }
 
         function addQuestion() {
+            //instead of using this try use jQuery append
             var questionHtml = '<div class="form-group">' +
                 '<h3>Question ' + questionCount + '</h3>' +
                 '<label for="group">Group:</label>' +
