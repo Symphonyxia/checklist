@@ -1,6 +1,5 @@
 <?php
 include 'header.php';
-include 'boot.php';
 ?>
 
 <div class="container">
