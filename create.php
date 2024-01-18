@@ -2,7 +2,7 @@
 include 'header.php';
 ?>
 <div class="container">
-    <form action="resources/yearcode.php" method="post">
+    <form action="yearcode.php" method="post">
         <label for="year">Choose a year:</label>
         <select name="year" id="year">
             <?php
@@ -13,11 +13,10 @@ include 'header.php';
             ?>
         </select>
         <br>
-        <input type="submit" name="yearbtn" value="Submit">
-
+        <input type="submit" name="selected_year" value="Submit">
+        <!-- Add a hidden input field to pass the selected year to form_page.php -->
     </form>
 </div>
-
 <?php
 include 'footer.php';
 ?>

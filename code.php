@@ -31,7 +31,7 @@ if (isset($_POST['register'])) {
                 $stmt->execute(['first_name' => $first_name, 'last_name' => $last_name, 'email' => $email, 'password' => $hashed_password]);
 
                 $_SESSION['success'] = 'Registration successful';
-                header("Location: create.php");
+                header("Location: index.php");
                 exit();
             } catch (PDOException $e) {
                 $_SESSION['error'] = $e->getMessage();
