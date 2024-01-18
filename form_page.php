@@ -2,104 +2,59 @@
 include 'header.php';
 ?>
 
-<h1>Create Form</h1>
+<?php
+if (isset($_SESSION['error'])) {
+    echo "<div class='alert alert-danger text-center'>
+            <i class='fas fa-exclamation-triangle'></i> " . $_SESSION['error'] . "
+          </div>";
 
-<form id="createForm" action="save_form.php" method="post">
+    // unset error
+    unset($_SESSION['error']);
+}
+
+if (isset($_SESSION['success'])) {
+    echo "<div class='alert alert-success text-center'>
+            <i class='fas fa-check-circle'></i> " . $_SESSION['success'] . "
+          </div>";
+
+    // unset success
+    unset($_SESSION['success']);
+}
+?>
+
+<form action="save_form.php" method="post">
+    <label for="group">Enter Group:</label>
+    <input type="text" id="group" name="group[]" required>
+
+    <label for="display_text">Enter Text:</label>
+    <input type="text" id="display_text" name="display_text[]" required>
+
+    <label for="max_points">Enter Points:</label>
+    <input type="number" id="max_points" name="max_points[]" required>
 
 
-    <?php
-    if (isset($_SESSION['selectedYear'])) {
-        $selectedYear = $_SESSION['selectedYear'];
-        echo "$selectedYear";
-        // Clear the session variable to avoid displaying the same data on page refresh
-        unset($_SESSION['selectedYear']);
-    } else {
-        // Handle the case when "selectedYear" is not set
-    }
-    ?>
+    <!-- Allow user to add more questions dynamically -->
+    <div id="additional_questions"></div>
+    <button type="button" onclick="addQuestion()">Add Question</button>
 
-    <div id="groupsContainer">
-        <!-- Group input fields will be added here dynamically -->
-    </div>
-
-    <button type="button" id="addGroup">Add Group</button><br><br>
-
-    <div id="questionsContainer">
-        <!-- Question input fields will be added here dynamically -->
-    </div>
-
-    <button type="button" id="addQuestion">Add Question</button><br><br>
-
-    <button type="submit">Save Form</button>
+    <button type="submit" name="addform">Create Questions</button>
 </form>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var groupsContainer = document.getElementById('groupsContainer');
-        var questionsContainer = document.getElementById('questionsContainer');
-        var groupCount = 1;
-        var questionCount = 1;
+    // JavaScript function to dynamically add more question fields
+    function addQuestion() {
+        var additionalQuestions = document.getElementById('additional_questions');
+        var newQuestion = document.createElement('div');
 
-        function addGroup() {
-            var groupHtml = '<div class="form-group">' +
-                '<h3>Group ' + groupCount + '</h3>' +
-                '<label for="group">Group Name:</label>' +
-                '<input type="text" name="group[' + groupCount + '][group]" required><br><br>' +
-                '</div>';
+        newQuestion.innerHTML = '<label>Enter Group:</label>' +
+            '<input type="text" name="group[]" required>' +
+            '<label>Enter Text:</label>' +
+            '<input type="text" name="display_text[]" required>'+
+            '<label>Enter Points:</label>' +
+            '<input type="number" name="max_points[]" required>';
 
-            groupsContainer.insertAdjacentHTML('beforeend', groupHtml);
-            groupCount++;
-
-            // Update question group dropdown options
-            updateQuestionGroupOptions();
-        }
-
-        function updateQuestionGroupOptions() {
-            var groupSelect = document.querySelectorAll('select[name^="question["]');
-
-            groupSelect.forEach(function(select) {
-                // Remove existing options
-                while (select.options.length > 0) {
-                    select.options.remove(0);
-                }
-
-                // Add options dynamically based on existing groups
-                var groupInputOptions = document.querySelectorAll('input[name^="group["]');
-                groupInputOptions.forEach(function(groupInput) {
-                    var groupName = groupInput.value;
-                    var option = document.createElement('option');
-                    option.value = groupName;
-                    option.text = groupName;
-                    select.add(option);
-                });
-            });
-        }
-
-        function addQuestion() {
-            //instead of using this try use jQuery append
-            var questionHtml = '<div class="form-group">' +
-                '<h3>Question ' + questionCount + '</h3>' +
-                '<label for="group">Group:</label>' +
-                '<select name="question[' + questionCount + '][group]"></select><br><br>' +
-                '<label for="displayText">Display Text:</label>' +
-                '<input type="text" name="question[' + questionCount + '][display_text]" required><br><br>' +
-                '<label for="maxPoints">Max Points:</label>' +
-                '<input type="number" name="question[' + questionCount + '][max_points]" required><br><br>' +
-                '</div>';
-
-            questionsContainer.insertAdjacentHTML('beforeend', questionHtml);
-            questionCount++;
-
-            // Update question group dropdown options
-            updateQuestionGroupOptions();
-        }
-
-        var addGroupButton = document.getElementById('addGroup');
-        addGroupButton.addEventListener('click', addGroup);
-
-        var addQuestionButton = document.getElementById('addQuestion');
-        addQuestionButton.addEventListener('click', addQuestion);
-    });
+        additionalQuestions.appendChild(newQuestion);
+    }
 </script>
 
 <?php
