@@ -23,15 +23,26 @@ if (isset($_SESSION['success'])) {
 ?>
 
 <form action="save_form.php" method="post">
-    <label for="group">Enter Group:</label>
-    <input type="text" id="group" name="group[]" required>
-
-    <label for="display_text">Enter Text:</label>
-    <input type="text" id="display_text" name="display_text[]" required>
-
-    <label for="max_points">Enter Points:</label>
-    <input type="number" id="max_points" name="max_points[]" required>
-
+    <div class="card card-block">
+        <div class=" row g-3">
+            <div class="col">
+                <label for="group">Enter Group:</label>
+                <input type="text" class="form-control" name="group[]" id="group" placeholder="Enter Group Name" required>
+            </div>
+            <div class=" row g-3">
+                <div class="col">
+                    <label for="display_text">Question:</label>
+                    <input type="text" class="form-control" name="display_text[]" id="display_text" placeholder="Enter Question" required>
+                </div>
+            </div>
+            <div class=" row g-3">
+                <div class="col">
+                    <label for="max_points">Enter Points:</label>
+                    <input type="number" class="form-control" name="max_points[]" id="max_points" placeholder="Enter Question" required>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Allow user to add more questions dynamically -->
     <div id="additional_questions"></div>
@@ -49,7 +60,7 @@ if (isset($_SESSION['success'])) {
         newQuestion.innerHTML = '<label>Enter Group:</label>' +
             '<input type="text" name="group[]" required>' +
             '<label>Enter Text:</label>' +
-            '<input type="text" name="display_text[]" required>'+
+            '<input type="text" name="display_text[]" required>' +
             '<label>Enter Points:</label>' +
             '<input type="number" name="max_points[]" required>';
 
