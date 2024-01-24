@@ -32,7 +32,7 @@ require_once('boot.php');
 
 <header>
 
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary-burlywood">
         <div class="container-fluid">
             <a class="navbar-brand" href="dashboard.php"><strong>Checklist Assessment System</strong></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,6 +63,7 @@ if (isset($_SESSION['error'])) {
             <i class='fas fa-exclamation-triangle'></i> " . $_SESSION['error'] . "
           </div>";
 
+    // unset error
     unset($_SESSION['error']);
 }
 
@@ -71,6 +72,7 @@ if (isset($_SESSION['success'])) {
             <i class='fas fa-check-circle'></i> " . $_SESSION['success'] . "
           </div>";
 
+    // unset success
     unset($_SESSION['success']);
 }
 ?>
