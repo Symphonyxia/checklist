@@ -17,7 +17,6 @@ include 'boot.php';
                         </div>
                     ";
 
-                //unset error
                 unset($_SESSION['error']);
             }
 
@@ -28,7 +27,6 @@ include 'boot.php';
                         </div>
                     ";
 
-                //unset success
                 unset($_SESSION['success']);
             }
             ?>
@@ -60,15 +58,13 @@ include 'boot.php';
                         </div>
                         <div class="mb-3 row">
                             <label for="password" class="col-sm-3 col-form-label">Password</label>
-                            <input class="form-control" type="password" id="password" name="password" value="<?php echo (isset($_SESSION['password'])) ? $_SESSION['password'] : '';
-                                                                                                                unset($_SESSION['password']) ?>" placeholder="Enter password" required>
+                            <input class="form-control" type="password" id="password" name="password" value="<?php echo (isset($_SESSION['password'])) ? $_SESSION['password'] : ''; unset($_SESSION['password']) ?>" placeholder="Enter password" required>
 
 
                         </div>
                         <div class="form-group row">
                             <label for="confirm" class="col-sm-6 col-form-label">Confirm Password</label>
-                            <input class="form-control" type="password" id="confirm" name="confirm" value="<?php echo (isset($_SESSION['confirm'])) ? $_SESSION['confirm'] : '';
-                                                                                                            unset($_SESSION['confirm']) ?>" placeholder="Re-type password">
+                            <input class="form-control" type="password" id="confirm" name="confirm" value="<?php echo (isset($_SESSION['confirm'])) ? $_SESSION['confirm'] : ''; unset($_SESSION['confirm']) ?>" placeholder="Re-type password">
 
 
                         </div>
