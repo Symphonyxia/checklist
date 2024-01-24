@@ -33,14 +33,11 @@ $distinctYears = $getDistinctYearsStmt->fetchAll(PDO::FETCH_COLUMN);
     <br>
 
     <?php
-    // Initialize $selectedYear to an empty string
     $selectedYear = '';
 
-    // Check if a specific year is selected
     if (isset($_GET['selectedYear'])) {
         $selectedYear = $_GET['selectedYear'];
 
-        // Fetch content for the accordion section based on the selected year
         $getAccordionContentStmt = $pdo->prepare('
         SELECT q.group, q.display_text, q.max_points, cr.checklist_id, cr.questions_id, cr.result_yes, cr.result_no
         FROM checklist c
@@ -51,15 +48,12 @@ $distinctYears = $getDistinctYearsStmt->fetchAll(PDO::FETCH_COLUMN);
         $getAccordionContentStmt->execute(['selectedYear' => $selectedYear]);
         $accordionContent = $getAccordionContentStmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Group accordion content by checklist_id
         $groupedAccordionContent = [];
         foreach ($accordionContent as $content) {
             $groupedAccordionContent[$content['checklist_id']][] = $content;
         }
     }
 
-
-    // Fetch existing questions from the database
     $getQuestionsStmt = $pdo->prepare('SELECT * FROM questions');
     $getQuestionsStmt->execute();
     $questions = $getQuestionsStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -90,7 +84,6 @@ $distinctYears = $getDistinctYearsStmt->fetchAll(PDO::FETCH_COLUMN);
                                         <label for="max_points">Enter Points:</label>
                                         <input type="number" class="form-control" name="max_points[]" value="<?= $content['max_points']; ?>">
 
-                                        <!-- Hidden field to store the question ID -->
                                         <input type="hidden" name="question_id[]" value="<?= $content['questions_id']; ?>">
                                     </div>
                                 <?php endforeach; ?>
