@@ -3,6 +3,7 @@ include 'header.php';
 include 'sidebar.php';
 
 
+// Fetch distinct years from checklist_result
 $getDistinctYearsStmt = $pdo->prepare('SELECT DISTINCT c.year FROM checklist c JOIN checklist_result cr ON c.checklist_id = cr.checklist_id');
 $getDistinctYearsStmt->execute();
 $distinctYears = $getDistinctYearsStmt->fetchAll(PDO::FETCH_COLUMN);
@@ -19,6 +20,8 @@ $distinctYears = $getDistinctYearsStmt->fetchAll(PDO::FETCH_COLUMN);
 
 
                         <form method="get" action="">
+                        <input type="hidden" name="CSRFkey" value="<?php echo $key ?>" id="CSRFkey">
+    <input type="hidden" name="token" value="<?php echo $token ?>" id="CSRFtoken">
                             <label for="yearSelect">Select Year:</label>
                             <select id="yearSelect" name="selectedYear">
                                 <?php foreach ($distinctYears as $distinctYear) : ?>
@@ -39,12 +42,15 @@ $distinctYears = $getDistinctYearsStmt->fetchAll(PDO::FETCH_COLUMN);
 
 
     <?php
+    // Initialize $selectedYear to an empty string
     $selectedYear = '';
 
+    // Check if a specific year is selected
     if (isset($_GET['searchByYear'])) {
         $selectedYear = $_GET['selectedYear'];
     }
 
+    // Fetch content for the accordion section based on the selected year or the default value
     $getAccordionContentStmt = $pdo->prepare('
     SELECT q.group, q.display_text, q.max_points, cr.checklist_id, cr.questions_id, cr.result_yes, cr.result_no
     FROM checklist c
@@ -60,6 +66,7 @@ $distinctYears = $getDistinctYearsStmt->fetchAll(PDO::FETCH_COLUMN);
         <button type="button" class="accordion">Year <?php echo $selectedYear; ?></button>
         <div class="panel">
             <?php
+            // Fetch content for the accordion section based on the year
             $getAccordionContentStmt = $pdo->prepare('
             SELECT q.group, q.display_text, q.max_points, cr.checklist_id, cr.questions_id, cr.result_yes, cr.result_no
             FROM checklist c
@@ -84,9 +91,10 @@ $distinctYears = $getDistinctYearsStmt->fetchAll(PDO::FETCH_COLUMN);
                     <tbody>
                         <?php if (!empty($accordionContent)) : ?>
                             <?php
-                            $currentGroup = null;
+                            $currentGroup = null; // Initialize a variable to store the current group name
                             foreach ($accordionContent as $content) {
                                 if ($currentGroup !== $content['group']) {
+                                    // Display the group name only if it has changed
                                     echo '<tr><td colspan="5"><strong>' . htmlspecialchars($content['group']) . '</strong></td></tr>';
                                     $currentGroup = $content['group'];
                                 }
