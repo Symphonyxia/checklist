@@ -13,6 +13,8 @@ include 'sidebar.php';
 
                     <div class="row">
                         <form action="resources/dr/yearcode.php" method="post">
+                        <input type="hidden" name="CSRFkey" value="<?php echo $key ?>" id="CSRFkey">
+    <input type="hidden" name="token" value="<?php echo $token ?>" id="CSRFtoken">
                             <div class="row form-group">
                                 <div class="form-group col-xs-4">
                                     <label for="year">
@@ -55,6 +57,8 @@ include 'sidebar.php';
                         <div class="container">
 
                             <form action="resources/dr/save_form.php" method="post">
+                            <input type="hidden" name="CSRFkey" value="<?php echo $key ?>" id="CSRFkey">
+    <input type="hidden" name="token" value="<?php echo $token ?>" id="CSRFtoken">
 
                                 <div id="additional_questions"></div>
 
