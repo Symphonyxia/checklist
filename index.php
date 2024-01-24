@@ -2,7 +2,8 @@
 include 'boot.php';
 
 ?>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
 <link rel="stylesheet" type="text/css" href="resources/style.css">
 
@@ -38,6 +39,11 @@ include 'boot.php';
       <div class="card">
         <div class="card-body">
           <form method="POST" action="resources/dr/logcode.php">
+            <input type="hidden" name="CSRFkey" value="<?php echo $key ?>" id="CSRFkey">
+            <input type="hidden" name="token" value="<?php echo $token ?>" id="CSRFtoken">
+
+
+
             <div class="mb-3">
               <label for="email">Email</label>
               <input class="form-control" type="email" id="email" name="email" placeholder="Enter email" required>
@@ -47,13 +53,15 @@ include 'boot.php';
             <br>
             <div class="mb-3">
               <label for="password">Password</label>
-              <input class="form-control" type="password" id="password" name="password" placeholder="Enter password" required>
+              <input class="form-control" type="password" id="password" name="password" placeholder="Enter password"
+                required>
 
 
             </div>
             <hr>
             <div>
-              <button type="submit" class="btn btn-primary" name="login"><i class="fas fa-sign-in-alt"></i> Login</button>
+              <button type="submit" class="btn btn-primary" name="login"><i class="fas fa-sign-in-alt"></i>
+                Login</button>
               <a href="signin.php">Register a new account</a>
             </div>
           </form>
