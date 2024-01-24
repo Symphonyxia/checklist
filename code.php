@@ -21,6 +21,7 @@ if (isset($_POST['register'])) {
 
         if ($stmt->rowCount() > 0) {
             $_SESSION['error'] = 'Email already taken';
+            header("Location: index.php");
         } else {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
@@ -34,6 +35,17 @@ if (isset($_POST['register'])) {
                 exit();
             } catch (PDOException $e) {
                 $_SESSION['error'] = $e->getMessage();
+                header("Location: index.php");
+
+            }
+
+            // verify in landing page/processfile
+            $key = $_POST['CSRFkey'];
+            $token = hash_hmac('sha256', 'This is for index page', $key);
+            if (hash_equals($token, $_POST['CSRFtoken'])) {
+
+            } else {
+
             }
         }
     }
