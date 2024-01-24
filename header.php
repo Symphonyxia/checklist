@@ -63,7 +63,6 @@ if (isset($_SESSION['error'])) {
             <i class='fas fa-exclamation-triangle'></i> " . $_SESSION['error'] . "
           </div>";
 
-    // unset error
     unset($_SESSION['error']);
 }
 
@@ -72,7 +71,6 @@ if (isset($_SESSION['success'])) {
             <i class='fas fa-check-circle'></i> " . $_SESSION['success'] . "
           </div>";
 
-    // unset success
     unset($_SESSION['success']);
 }
 ?>
