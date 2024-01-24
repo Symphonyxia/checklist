@@ -38,4 +38,14 @@ if (isset($_POST['updateform'])) {
         exit();
     }
 }
+
+
+$key = $_POST['CSRFkey'];
+$token = hash_hmac('sha256', 'This is for index page', $key);
+if (hash_equals($token, $_POST['CSRFtoken'])) {
+
+} else {
+
+}
+
 ?>
