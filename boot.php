@@ -19,3 +19,5 @@ try {
     echo 'Connection Failed: ' . $e->getMessage();
     die();
 }
+$key = bin2hex(random_bytes(64));
+$token = hash_hmac('sha256', 'This is for index page', $key);

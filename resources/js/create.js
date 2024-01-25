@@ -4,7 +4,7 @@ function addQuestion() {
   var newQuestion = document.createElement("div");
 
   newQuestion.innerHTML =
-    '<div class="row mb-3">' + // Added "mb-3" class for margin-bottom
+    '<div class="row mb-3">' +
     '<div class="col-md-5">' +
     ' <label for="group"> <strong> Enter Group: </strong> </label>' +
     ' <input type="text" id="group" class="form-control" name="group[]" required>' +

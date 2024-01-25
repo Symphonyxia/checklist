@@ -80,10 +80,12 @@ if (isset($_POST['submitResultsButton'])) {
         $response['success'] = true;
         $_SESSION['success'] = 'Results successfully recorded.'; // Set session success message
         header("Location: ../../eval_page.php");
+        exit(); // Make sure to exit after redirection
     } catch (PDOException $e) {
         $pdo->rollBack();
         $_SESSION['error'] = 'Failed to record results. Please try again.'; // Set session error message
         header("Location: ../../eval_page.php");
+        exit(); // Make sure to exit after redirection
     }
 }
 
@@ -91,4 +93,3 @@ if (isset($_POST['submitResultsButton'])) {
 header('Content-Type: application/json');
 echo json_encode($response);
 exit();
-?>

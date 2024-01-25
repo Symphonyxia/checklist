@@ -15,30 +15,18 @@ if (isset($_POST['addform'])) {
 
     // Use prepared statements and parameter binding for security
     $insertQuestionStmt = $pdo->prepare('INSERT INTO questions (`group`, `display_text`, `max_points`) VALUES (:group, :display_text, :max_points)');
-    $insertResultStmt = $pdo->prepare('INSERT INTO checklist_result (`checklist_id`, `questions_id`) VALUES (:checklist_id, :questions_id)');
 
     try {
-        // Retrieve the selected year and checklist ID from the session variables
-        $year = $_SESSION['selectedYear'];
-        $checklistId = $_SESSION['checklistId'];
 
-        if (empty($year) || empty($checklistId)) {
-            $_SESSION['error'] = 'Year or Checklist ID cannot be empty';
-            header("Location: ../../create.php");
-            exit();
-        }
 
         // Insert each question into the database and associate with the checklist
         for ($i = 0; $i < count($groups); $i++) {
             // Insert into questions table
             $insertQuestionStmt->execute(['group' => $groups[$i], 'display_text' => $display_texts[$i], 'max_points' => $max_points[$i]]);
             $questionsId = $pdo->lastInsertId();
-
-            // Insert into checklist_result table
-            $insertResultStmt->execute(['checklist_id' => $checklistId, 'questions_id' => $questionsId]);
         }
 
-        $_SESSION['success'] = 'Checklist created successfully';
+        $_SESSION['success'] = 'Questions Inserted successfully';
         header("Location: ../../create.php");
         exit();
     } catch (PDOException $e) {
@@ -47,4 +35,3 @@ if (isset($_POST['addform'])) {
         exit();
     }
 }
-?>

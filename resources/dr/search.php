@@ -1,6 +1,33 @@
 <?php
 include '../../boot.php';
 
+
+if (isset($_POST['deleteQuestion'])) {
+    $questionIdToDelete = $_POST['deleteQuestion'];
+
+    // Function to delete the question
+    function deleteQuestion($pdo, $questionIdToDelete)
+    {
+        $deleteQuestionStmt = $pdo->prepare('DELETE FROM questions WHERE questions_id = ?');
+        $deleteQuestionStmt->execute([$questionIdToDelete]);
+        return $deleteQuestionStmt->rowCount() > 0;
+    }
+
+    // Call the deleteQuestion function
+    if (deleteQuestion($pdo, $questionIdToDelete)) {
+        // Success message, or redirect if needed
+        $_SESSION['delete_message'] = 'Question deleted successfully!';
+        header("Location: ../../edit_questions.php");
+        exit();
+    } else {
+        // Error message
+        $_SESSION['delete_message'] = 'Failed to delete the question.';
+        header("Location: ../../edit_questions.php");
+        exit();
+    }
+}
+
+
 // Check if the form is submitted for updating
 if (isset($_POST['updateform'])) {
     $questionIds = $_POST['question_id'];
@@ -11,7 +38,6 @@ if (isset($_POST['updateform'])) {
     try {
         $pdo->beginTransaction();
 
-        // Loop through the submitted data and update the questions table
         foreach ($questionIds as $key => $questionId) {
             $updateStmt = $pdo->prepare('
                 UPDATE questions
@@ -38,4 +64,3 @@ if (isset($_POST['updateform'])) {
         exit();
     }
 }
-?>
