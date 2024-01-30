@@ -2,72 +2,29 @@
 include 'header.php';
 include 'sidebar.php';
 
-
+// Query all distinct years
 $getDistinctYearsStmt = $pdo->prepare('SELECT DISTINCT c.year FROM checklist c JOIN checklist_result cr ON c.checklist_id = cr.checklist_id');
 $getDistinctYearsStmt->execute();
 $distinctYears = $getDistinctYearsStmt->fetchAll(PDO::FETCH_COLUMN);
+
 ?>
 
 <article class="my-article">
-    <div class="title-search-block">
-        <div class="title-block">
-
-            <div class="card col-lg-12">
-                <div class="card-body">
-
-                    <div class="row">
 
 
-                        <form method="get" action="">
-                            <label for="yearSelect">Select Year:</label>
-                            <select id="yearSelect" name="selectedYear">
-                                <?php foreach ($distinctYears as $distinctYear) : ?>
-                                    <option value="<?php echo $distinctYear; ?>" <?php echo (isset($_GET['searchByYear']) && $_GET['selectedYear'] == $distinctYear) ? 'selected' : ''; ?>>
-                                        <?php echo $distinctYear; ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <button type="submit" name="searchByYear" class="btn btn-primary btn-sm">Search</button>
-                        </form>
-                    </div>
-
-
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <?php
-    $selectedYear = '';
-
-    if (isset($_GET['searchByYear'])) {
-        $selectedYear = $_GET['selectedYear'];
-    }
-
-    $getAccordionContentStmt = $pdo->prepare('
-    SELECT q.group, q.display_text, q.max_points, cr.checklist_id, cr.questions_id, cr.result_yes, cr.result_no
-    FROM checklist c
-    JOIN checklist_result cr ON c.checklist_id = cr.checklist_id
-    JOIN questions q ON cr.questions_id = q.questions_id
-    WHERE c.year = :year
-');
-    $getAccordionContentStmt->execute(['year' => $selectedYear]);
-    $accordionContent = $getAccordionContentStmt->fetchAll(PDO::FETCH_ASSOC);
-    ?>
-
-    <?php if (!empty($selectedYear)) : ?>
-        <button type="button" class="accordion">Year <?php echo $selectedYear; ?></button>
+    <?php foreach ($distinctYears as $year) : ?>
+        <button type="button" class="accordion">Year <?php echo $year; ?></button>
         <div class="panel">
             <?php
+            // Fetch accordion content for each year
             $getAccordionContentStmt = $pdo->prepare('
-            SELECT q.group, q.display_text, q.max_points, cr.checklist_id, cr.questions_id, cr.result_yes, cr.result_no
-            FROM checklist c
-            JOIN checklist_result cr ON c.checklist_id = cr.checklist_id
-            JOIN questions q ON cr.questions_id = q.questions_id
-            WHERE c.year = :year
-        ');
-            $getAccordionContentStmt->execute(['year' => $selectedYear]);
+                SELECT q.group, q.display_text, q.max_points, cr.checklist_id, cr.questions_id, cr.result_yes, cr.result_no
+                FROM checklist c
+                JOIN checklist_result cr ON c.checklist_id = cr.checklist_id
+                JOIN questions q ON cr.questions_id = q.questions_id
+                WHERE c.year = :year
+            ');
+            $getAccordionContentStmt->execute(['year' => $year]);
             $accordionContent = $getAccordionContentStmt->fetchAll(PDO::FETCH_ASSOC);
             ?>
 
@@ -96,7 +53,6 @@ $distinctYears = $getDistinctYearsStmt->fetchAll(PDO::FETCH_COLUMN);
                                     <td><?php echo htmlspecialchars($content['result_yes']); ?></td>
                                     <td><?php echo htmlspecialchars($content['result_no']); ?></td>
                                 </tr>
-
                             <?php } ?>
                         <?php else : ?>
                             <tr>
@@ -109,6 +65,8 @@ $distinctYears = $getDistinctYearsStmt->fetchAll(PDO::FETCH_COLUMN);
             </form>
             <br>
         </div>
-    <?php endif; ?>
+    <?php endforeach; ?>
 
-    <?php include 'footer.php'; ?>
+</article>
+
+<?php include 'footer.php'; ?>

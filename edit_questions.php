@@ -41,6 +41,8 @@ $questions = $getQuestionsStmt->fetchAll(PDO::FETCH_ASSOC);
                                         <div class="col-md-4">
                                             <label for="display_text">Enter Text:</label>
                                             <input type="text" class="form-control" name="display_text[]" value="<?= htmlspecialchars($question['display_text']); ?>">
+
+
                                         </div>
 
                                         <div class="col-md-3">

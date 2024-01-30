@@ -22,7 +22,7 @@ require_once('boot.php');
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="resources/js/table.js"></script>
-    <script src="resources/js/eval.js"></script>
+
     <script src="resources/js/update_questions.js"></script>
     <script src="resources/js/create.js"></script>
 
@@ -57,23 +57,23 @@ require_once('boot.php');
 </header>
 
 <body>
-<?php
-if (isset($_SESSION['error'])) {
-    echo "<div class='alert alert-danger text-center'>
+    <?php
+    if (isset($_SESSION['error'])) {
+        echo "<div class='alert alert-danger text-center'>
             <i class='fas fa-exclamation-triangle'></i> " . $_SESSION['error'] . "
           </div>";
 
-    // unset error
-    unset($_SESSION['error']);
-}
+        // unset error
+        unset($_SESSION['error']);
+    }
 
-if (isset($_SESSION['success'])) {
-    echo "<div class='alert alert-success text-center'>
+    if (isset($_SESSION['success'])) {
+        echo "<div class='alert alert-success text-center'>
             <i class='fas fa-check-circle'></i> " . $_SESSION['success'] . "
           </div>";
 
-    // unset success
-    unset($_SESSION['success']);
-}
-?>
+        // unset success
+        unset($_SESSION['success']);
+    }
+    ?>
     <br>
