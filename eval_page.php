@@ -25,7 +25,7 @@ $allQuestions = $getAllQuestionsStmt->fetchAll(PDO::FETCH_ASSOC);
             <button type="submit" name="saveResultsButton" class="btn btn-primary">Save</button>
         </form>
 
-        <form method="post" action="submit_results.php" class="submitForm">
+        <form method="post" action="resources/dr/submit_results.php" class="submitForm">
             <table class="table table-bordered">
                 <thead>
                     <tr>
