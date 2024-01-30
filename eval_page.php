@@ -23,13 +23,14 @@ $allQuestions = $getAllQuestionsStmt->fetchAll(PDO::FETCH_ASSOC);
 
             <div class="card-body">
 
-                <div class="" <form method="post" action="" class="savForm">
+                <div class="">
+                     <form method="post" action="" class="saveForm">
                     <label for="yearInput">Enter Year:</label>
                     <input type="text" id="yearInput" name="selectedYear" value="<?php echo htmlspecialchars($selectedYear); ?>">
                     <button type="submit" name="saveResultsButton" class="btn btn-primary">Save</button>
                     </form>
 
-                    <form method="post" action="submit_results.php" class="submitForm">
+                    <form method="post" action="resources/dr/submit_results.php" class="submitForm">
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
