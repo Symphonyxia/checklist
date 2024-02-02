@@ -2,59 +2,36 @@
 include 'header.php';
 include 'sidebar.php';
 
-// Query all distinct years
-$getDistinctYearsStmt = $pdo->prepare('SELECT DISTINCT c.year FROM checklist c JOIN checklist_result cr ON c.checklist_id = cr.checklist_id');
-$getDistinctYearsStmt->execute();
-$distinctYears = $getDistinctYearsStmt->fetchAll(PDO::FETCH_COLUMN);
+// Query the latest checklist_id
+$getLatestChecklistIdStmt = $pdo->query('SELECT MAX(checklist_id) AS latest_id FROM checklist');
+$latestChecklistId = $getLatestChecklistIdStmt->fetchColumn();
 
-// Rating scheme thresholds
-$ratingScheme = array(
-    "Excellent" => array(91, 100),
-    "Very Good" => array(81, 90),
-    "Good" => array(71, 80),
-    "Weak" => array(61, 70),
-    "Non-operational" => array(51, 60),
-    "Defective" => array(41, 50),
-    "Non-existent" => array(0, 40)
-);
+// Fetch the year for the very latest checklist_id
+$getYearStmt = $pdo->prepare('SELECT year FROM checklist WHERE checklist_id = :latestChecklistId');
+$getYearStmt->bindParam(':latestChecklistId', $latestChecklistId, PDO::PARAM_INT);
+$getYearStmt->execute();
+$year = $getYearStmt->fetchColumn();
+
+// Fetch content for the very latest checklist_id
+$getYearContentStmt = $pdo->prepare('
+    SELECT q.group, q.display_text, q.max_points, cr.checklist_id, cr.questions_id, cr.result_yes, cr.result_no
+    FROM checklist c
+    JOIN checklist_result cr ON c.checklist_id = cr.checklist_id
+    JOIN questions q ON cr.questions_id = q.questions_id
+    WHERE c.checklist_id = :latestChecklistId
+');
+$getYearContentStmt->bindParam(':latestChecklistId', $latestChecklistId, PDO::PARAM_INT);
+$getYearContentStmt->execute();
+$yearContent = $getYearContentStmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
 <article class="my-article">
-
-    <?php foreach ($distinctYears as $year) : ?>
+    <?php if (!empty($yearContent)) : ?>
         <div>
-            <?php
-            // Fetch content for each year
-            $getYearContentStmt = $pdo->prepare('
-                SELECT q.group, q.display_text, q.max_points, cr.checklist_id, cr.questions_id, cr.result_yes, cr.result_no
-                FROM checklist c
-                JOIN checklist_result cr ON c.checklist_id = cr.checklist_id
-                JOIN questions q ON cr.questions_id = q.questions_id
-                WHERE c.year = :year
-            ');
-            $getYearContentStmt->execute(['year' => $year]);
-            $yearContent = $getYearContentStmt->fetchAll(PDO::FETCH_ASSOC);
-
-            // Calculate total points and rating
-            $totalPoints = 0;
-            foreach ($yearContent as $content) {
-                $totalPoints += $content['result_yes'];
-            }
-
-            // Determine rating
-            $rating = '';
-            foreach ($ratingScheme as $key => $value) {
-                if ($totalPoints >= $value[0] && $totalPoints <= $value[1]) {
-                    $rating = $key;
-                    break;
-                }
-            }
-            ?>
-
             <form method="post" action="">
                 <br>
-                <h3><strong>Year <?php echo $year; ?></strong></h3>
+                <h5><strong>Form for <?php echo $year; ?></strong></h5>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -64,37 +41,29 @@ $ratingScheme = array(
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($yearContent)) : ?>
-                            <?php
-                            $currentGroup = null;
-                            foreach ($yearContent as $content) {
-                                if ($currentGroup !== $content['group']) {
-                                    echo '<tr><td colspan="5"><strong>' . htmlspecialchars($content['group']) . '</strong></td></tr>';
-                                    $currentGroup = $content['group'];
-                                }
-                            ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($content['display_text']); ?></td>
-                                    <td><?php echo htmlspecialchars($content['result_yes']); ?></td>
-                                    <td><?php echo htmlspecialchars($content['result_no']); ?></td>
-                                </tr>
-                            <?php } ?>
-                        <?php else : ?>
+                        <?php
+                        $currentGroup = null;
+                        foreach ($yearContent as $content) {
+                            if ($currentGroup !== $content['group']) {
+                                echo '<tr><td colspan="3"><strong>' . htmlspecialchars($content['group']) . '</strong></td></tr>';
+                                $currentGroup = $content['group'];
+                            }
+                        ?>
                             <tr>
-                                <td colspan="5">No data available for this year.</td>
+                                <td><?php echo htmlspecialchars($content['display_text']); ?></td>
+                                <td><?php echo htmlspecialchars($content['result_yes'] === 'Yes' ? 'Yes' : 'No'); ?></td>
+                                <td><?php echo htmlspecialchars($content['result_no'] === 'Yes' ? 'Yes' : 'No'); ?></td>
                             </tr>
-                        <?php endif; ?>
+                        <?php } ?>
                     </tbody>
                 </table>
-                <br>
-                <p><strong>Total Point Score: <?php echo $totalPoints; ?></strong></p>
-                <p><strong>Rating: <?php echo $rating; ?></strong></p>
                 <br>
             </form>
             <br>
         </div>
-    <?php endforeach; ?>
-
+    <?php else : ?>
+        <p>No data available for the latest checklist.</p>
+    <?php endif; ?>
 </article>
 
 <?php include 'footer.php'; ?>
