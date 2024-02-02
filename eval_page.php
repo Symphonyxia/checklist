@@ -4,7 +4,7 @@ include 'sidebar.php';
 
 $selectedYear = '';
 
-if (isset($_POST['saveResultsButton'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $selectedYear = $_POST['selectedYear'];
 
     // Save the year in the checklist table
@@ -15,19 +15,21 @@ if (isset($_POST['saveResultsButton'])) {
 $getAllQuestionsStmt = $pdo->prepare('SELECT `group`, display_text, max_points, questions_id FROM questions');
 $getAllQuestionsStmt->execute();
 $allQuestions = $getAllQuestionsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Sort questions by group
+usort($allQuestions, function ($a, $b) {
+    return strcmp($a['group'], $b['group']);
+});
 ?>
 
 <article class="my-article">
     <div class="title-search-block">
         <div class="card col-lg-12">
-
             <div class="card-body">
-
                 <div class="">
-                     <form method="post" action="" class="saveForm">
-                    <label for="yearInput">Enter Year:</label>
-                    <input type="text" id="yearInput" name="selectedYear" value="<?php echo htmlspecialchars($selectedYear); ?>">
-                    <button type="submit" name="saveResultsButton" class="btn btn-primary">Save</button>
+                    <form method="post" action="" class="saveForm" id="saveForm">
+                        <label for="yearInput">Title:</label>
+                        <input type="text" id="yearInput" name="selectedYear" value="<?php echo htmlspecialchars($selectedYear); ?>">
                     </form>
 
                     <form method="post" action="resources/dr/submit_results.php" class="submitForm">
@@ -71,15 +73,29 @@ $allQuestions = $getAllQuestionsStmt->fetchAll(PDO::FETCH_ASSOC);
                             </tbody>
                         </table>
                         <input type="hidden" name="checklist_id" value="<?php echo $selectedYear; ?>">
-
-                        <br>
-                        <button type="submit" name="submitResultsButton" class="btn btn-primary">Submit Results</button>
                     </form>
+
+                    <br>
+                    <button type="button" class="btn btn-primary" onclick="submitForm()">Submit Results</button>
                 </div>
             </div>
         </div>
     </div>
-
 </article>
+
+<script>
+    let timeoutId;
+
+    document.getElementById('yearInput').addEventListener('input', function() {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(function() {
+            document.getElementById('saveForm').submit();
+        }, 30000); // 1 minute in milliseconds
+    });
+
+    function submitForm() {
+        document.querySelector('.submitForm').submit();
+    }
+</script>
 
 <?php include 'footer.php'; ?>
