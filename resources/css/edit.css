@@ -1,0 +1,9 @@
+.edit-text,
+.edit-group {
+    resize: vertical;
+    width: 100%;
+}
+
+.edit-points {
+    width: 100px;
+}
