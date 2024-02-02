@@ -9,7 +9,13 @@ $latestChecklistId = $getLatestChecklistIdStmt->fetchColumn();
 // Fetch the year for the very latest checklist_id
 $getYearStmt = $pdo->prepare('SELECT year FROM checklist WHERE checklist_id = :latestChecklistId');
 $getYearStmt->bindParam(':latestChecklistId', $latestChecklistId, PDO::PARAM_INT);
-$getYearStmt->execute();
+
+// Execute the statement before fetching
+if (!$getYearStmt->execute()) {
+    $errorInfo = $getYearStmt->errorInfo();
+    echo "Error fetching year: {$errorInfo[2]}<br>";
+}
+
 $year = $getYearStmt->fetchColumn();
 
 // Fetch content for the very latest checklist_id
@@ -24,7 +30,50 @@ $getYearContentStmt->bindParam(':latestChecklistId', $latestChecklistId, PDO::PA
 $getYearContentStmt->execute();
 $yearContent = $getYearContentStmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Fetch max_points for 'Yes' results
+$getMaxPointsStmt = $pdo->prepare('
+    SELECT cr.questions_id, q.max_points
+    FROM checklist_result cr
+    JOIN questions q ON cr.questions_id = q.questions_id
+    WHERE cr.checklist_id = :latestChecklistId AND cr.result_yes = \'Yes\'
+');
+$getMaxPointsStmt->bindParam(':latestChecklistId', $latestChecklistId, PDO::PARAM_INT);
+
+// Execute the statement and handle errors
+if ($getMaxPointsStmt->execute()) {
+    $maxPointsResults = $getMaxPointsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Sum up max_points for 'Yes' results
+    $sumMaxPoints = array_sum(array_column($maxPointsResults, 'max_points'));
+
+    foreach ($maxPointsResults as $result) {
+        $questionId = $result['questions_id'];
+        $maxPoints = $result['max_points'];
+    }
+
+
+    $grade = '';
+    if ($sumMaxPoints >= 0 && $sumMaxPoints <= 40) {
+        $grade = 'Non-existent';
+    } elseif ($sumMaxPoints >= 41 && $sumMaxPoints <= 50) {
+        $grade = 'Defective';
+    } elseif ($sumMaxPoints >= 51 && $sumMaxPoints <= 60) {
+        $grade = 'Non-operational';
+    } elseif ($sumMaxPoints >= 61 && $sumMaxPoints <= 70) {
+        $grade = 'Weak';
+    } elseif ($sumMaxPoints >= 71 && $sumMaxPoints <= 80) {
+        $grade = 'Good';
+    } elseif ($sumMaxPoints >= 81 && $sumMaxPoints <= 90) {
+        $grade = 'Very Good';
+    } elseif ($sumMaxPoints >= 91 && $sumMaxPoints <= 100) {
+        $grade = 'Excellent';
+    }
+} else {
+    $errorInfo = $getMaxPointsStmt->errorInfo();
+}
+
 ?>
+
 
 <article class="my-article">
     <?php if (!empty($yearContent)) : ?>
@@ -51,10 +100,15 @@ $yearContent = $getYearContentStmt->fetchAll(PDO::FETCH_ASSOC);
                         ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($content['display_text']); ?></td>
-                                <td><?php echo htmlspecialchars($content['result_yes'] === 'Yes' ? 'Yes' : 'No'); ?></td>
-                                <td><?php echo htmlspecialchars($content['result_no'] === 'Yes' ? 'Yes' : 'No'); ?></td>
+                                <td><?php echo ($content['result_yes'] === '0' || $content['result_yes'] === 'No') ? '' : 'Yes'; ?></td>
+                                <td><?php echo ($content['result_no'] === '0' || $content['result_no'] === 'No') ? '' : 'No'; ?></td>
                             </tr>
                         <?php } ?>
+                        <tr>
+                            <td><strong>TOTAL POINT SCORE: </strong></td>
+                            <td><strong><?php echo $sumMaxPoints; ?></strong></td>
+                            <td colspan="2"><strong><?php echo $grade; ?> </strong></td>
+                        </tr>
                     </tbody>
                 </table>
                 <br>
