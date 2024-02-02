@@ -2,77 +2,100 @@
 include 'header.php';
 include 'sidebar.php';
 
-$getDistinctYearsStmt = $pdo->prepare('SELECT DISTINCT c.year FROM checklist c JOIN checklist_result cr ON c.checklist_id = cr.checklist_id');
-$getDistinctYearsStmt->execute();
-$distinctYears = $getDistinctYearsStmt->fetchAll(PDO::FETCH_COLUMN);
+// Set the number of items per page
+$itemsPerPage = 1;
+
+// Get the current page from the URL parameter, default to 1
+$currentChecklistPage = isset($_GET['checklist_page']) ? (int)$_GET['checklist_page'] : 1;
+
+// Calculate the offset based on the current page and items per page
+$offset = ($currentChecklistPage - 1) * $itemsPerPage;
+
+// Query the total count of distinct checklist IDs
+$getTotalDistinctChecklistIdsStmt = $pdo->query('SELECT COUNT(DISTINCT checklist_id) FROM checklist');
+$totalDistinctChecklistIds = $getTotalDistinctChecklistIdsStmt->fetchColumn();
+
+// Query distinct checklist IDs with pagination
+$getDistinctChecklistIdsStmt = $pdo->prepare('SELECT DISTINCT checklist_id FROM checklist ORDER BY checklist_id LIMIT :offset, :itemsPerPage');
+$getDistinctChecklistIdsStmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+$getDistinctChecklistIdsStmt->bindParam(':itemsPerPage', $itemsPerPage, PDO::PARAM_INT);
+$getDistinctChecklistIdsStmt->execute();
+$distinctChecklistIds = $getDistinctChecklistIdsStmt->fetchAll(PDO::FETCH_COLUMN);
+
+// Calculate total pages for pagination
+$totalChecklistPages = ceil($totalDistinctChecklistIds / $itemsPerPage);
 ?>
 
 <article class="my-article">
-    <div class="title-search-block">
-        <div class="title-block">
+    <?php foreach ($distinctChecklistIds as $checklistId) : ?>
+        <div>
+            <?php
+            // Fetch content for each checklist ID
+            $getChecklistContentStmt = $pdo->prepare('
+                SELECT q.group, q.display_text, q.max_points, cr.checklist_id, cr.questions_id, cr.result_yes, cr.result_no, c.year
+                FROM checklist_result cr
+                JOIN questions q ON cr.questions_id = q.questions_id
+                JOIN checklist c ON cr.checklist_id = c.checklist_id
+                WHERE cr.checklist_id = :checklistId
+            ');
+            $getChecklistContentStmt->bindParam(':checklistId', $checklistId, PDO::PARAM_INT);
+            $getChecklistContentStmt->execute();
+            $checklistContent = $getChecklistContentStmt->fetchAll(PDO::FETCH_ASSOC);
+            ?>
 
-            <?php foreach ($distinctYears as $year) : ?>
-    <button type="button" class="accordion">Year <?php echo $year; ?></button>
-    <div class="panel">
-        <?php
-        $getAccordionContentStmt = $pdo->prepare('
-            SELECT q.group, q.display_text, q.max_points, cr.checklist_id, cr.questions_id, cr.result_yes, cr.result_no
-            FROM checklist c
-            JOIN checklist_result cr ON c.checklist_id = cr.checklist_id
-            JOIN questions q ON cr.questions_id = q.questions_id
-            WHERE c.year = :year
-        ');
-        $getAccordionContentStmt->execute(['year' => $year]);
-        $accordionContent = $getAccordionContentStmt->fetchAll(PDO::FETCH_ASSOC);
-        ?>
-
-        <form method="post" action="" >
-            <table class="table table-bordered">    
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Result Yes</th>
-                        <th>Result No</th>
-                        <th>Max Points</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (!empty($accordionContent)) : ?>
-                        <?php
-                        $currentGroup = null;
-                        foreach ($accordionContent as $content) {
-                            if ($currentGroup !== $content['group']) {
-                                echo '<tr><td colspan="5"><strong>' . htmlspecialchars($content['group']) . '</strong></td></tr>';
-                                $currentGroup = $content['group'];
-                            }
-                            ?>
+            <form method="post" action="">
+                <?php if (!empty($checklistContent)) : ?>
+                    <h5><strong>Form for <?php echo htmlspecialchars($checklistContent[0]['year']); ?></strong></h5>
+                    <table class="table table-bordered">
+                        <thead>
                             <tr>
-                                <td><?php echo htmlspecialchars($content['display_text']); ?></td>
-                                <td class="checkbox1">
-                                    <input type="checkbox" name="result_yes" disabled>
-                                </td>
-                                <td class="checkbox2">
-                                <input type="checkbox" name="result_no" disabled>
-                                </td>
-                                <td><?php echo htmlspecialchars($content['max_points']); ?></td>
-
+                                <th></th>
+                                <th>Yes</th>
+                                <th>No</th>
+                                <th>Max Points</th>
                             </tr>
-                        <?php } ?>
-                    <?php else : ?>
-                        <tr>
-                            <td colspan="5">No data available for this year.</td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </form>
-        <br>
-    </div>
-<?php endforeach; ?>
-
-
+                        </thead>
+                        <tbody>
+                            <?php
+                            $currentGroup = null;
+                            foreach ($checklistContent as $content) {
+                                if ($currentGroup !== $content['group']) {
+                                    echo '<tr><td colspan="5"><strong>' . htmlspecialchars($content['group']) . '</strong></td></tr>';
+                                    $currentGroup = $content['group'];
+                                }
+                            ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($content['display_text']); ?></td>
+                                    <td class="checkbox1">
+                                        <input type="checkbox" name="result_yes" disabled>
+                                    </td>
+                                    <td class="checkbox2">
+                                        <input type="checkbox" name="result_no" disabled>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($content['max_points']); ?></td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                <?php else : ?>
+                    <p>No data available for this checklist ID.</p>
+                <?php endif; ?>
+            </form>
+            <br>
         </div>
-    </div>
+    <?php endforeach; ?>
+
+
+
+    <!-- Pagination links for checklist IDs -->
+<div class="pagination-container">
+    <ul class="pagination">
+        <?php for ($i = 1; $i <= $totalChecklistPages; $i++) : ?>
+            <li><a class="<?php echo ($i === $currentChecklistPage) ? 'active' : ''; ?>" href="?checklist_page=<?php echo $i; ?>"><?php echo $i; ?></a></li>
+        <?php endfor; ?>
+    </ul>
+</div>
+
 </article>
 
 <?php include 'footer.php'; ?>
