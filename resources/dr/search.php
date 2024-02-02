@@ -33,13 +33,9 @@ if (isset($_POST['deleteQuestion'])) {
 // Check if the form is submitted for updating
 if (isset($_POST['updateform'])) {
     $questionIds = $_POST['question_id'];
-    $groups = $_POST['group'] ?? [];
+    $groups = isset($_POST['group']) ? $_POST['group'] : array();
     $displayTexts = $_POST['display_text'];
     $maxPoints = $_POST['max_points'];
-    $resultYesValues = $_POST['result_yes'] ?? [];
-    $resultNoValues = $_POST['result_no'] ?? [];
-
-    print_r($_POST);  // Debugging statement
 
     try {
         $pdo->beginTransaction();
@@ -48,45 +44,28 @@ if (isset($_POST['updateform'])) {
             // Update questions
             $updateStmt = $pdo->prepare('
                 UPDATE questions
-                SET `group` = :group, display_text = :display_text, max_points = :max_points
+                SET group = :group, display_text = :display_text, max_points = :max_points
                 WHERE questions_id = :question_id
             ');
 
             $updateStmt->execute([
-                'group' => $groups[$key] ?? null,
+                'group' => isset($groups[$key]) ? $groups[$key] : null,
                 'display_text' => $displayTexts[$key],
                 'max_points' => $maxPoints[$key],
-                'question_id' => $questionId
-            ]);
-
-            // Update checklist result based on checkboxes
-            $updateChecklistResultStmt = $pdo->prepare('
-                UPDATE checklist_result
-                SET result_yes = :result_yes, result_no = :result_no
-                WHERE questions_id = :question_id
-            ');
-
-            // ...
-
-            $updateChecklistResultStmt->execute([
-                'result_yes' => $resultYes,
-                'result_no' => $resultNo,
                 'question_id' => $questionId
             ]);
         }
 
         $pdo->commit();
-        $_SESSION['success'] = 'Questions and checklist results successfully updated.';
+        $_SESSION['success'] = 'Questions successfully updated.';
         header("Location: ../../edit_questions.php");
         exit();
     } catch (PDOException $e) {
         $pdo->rollBack();
-        $_SESSION['error'] = 'Failed to update questions and checklist results. Please try again. Error: ' . $e->getMessage();
+        $_SESSION['error'] = 'Failed to update questions. Please try again. Error: ' . $e->getMessage();
         header("Location: ../../edit_questions.php");
         exit();
     }
 }
 
-
 ob_end_flush(); // Flush the output buffer and send it
-?>
