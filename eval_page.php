@@ -90,7 +90,7 @@ usort($allQuestions, function ($a, $b) {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(function() {
             document.getElementById('saveForm').submit();
-        }, 30000); // 1 minute in milliseconds
+        }, 1000); // 1 minute in milliseconds
     });
 
     function submitForm() {
