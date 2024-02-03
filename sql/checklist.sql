@@ -36,6 +36,9 @@ CREATE TABLE `checklist` (
 -- Dumping data for table `checklist`
 --
 
+INSERT INTO `checklist` (`checklist_id`, `year`) VALUES
+(1, '2024 - Assessment Checklist on Local Disaster Coordinating Councils (LDCCs) Basic Disaster Risk Management Capability');
+
 
 -- --------------------------------------------------------
 
