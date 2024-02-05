@@ -2,15 +2,12 @@
 include 'header.php';
 include 'sidebar.php';
 
-// Query the latest checklist_id
 $getLatestChecklistIdStmt = $pdo->query('SELECT MAX(checklist_id) AS latest_id FROM checklist');
 $latestChecklistId = $getLatestChecklistIdStmt->fetchColumn();
 
-// Fetch the year for the very latest checklist_id
 $getYearStmt = $pdo->prepare('SELECT year FROM checklist WHERE checklist_id = :latestChecklistId');
 $getYearStmt->bindParam(':latestChecklistId', $latestChecklistId, PDO::PARAM_INT);
 
-// Execute the statement before fetching
 if (!$getYearStmt->execute()) {
     $errorInfo = $getYearStmt->errorInfo();
     echo "Error fetching year: {$errorInfo[2]}<br>";
@@ -18,7 +15,6 @@ if (!$getYearStmt->execute()) {
 
 $year = $getYearStmt->fetchColumn();
 
-// Fetch content for the very latest checklist_id
 $getYearContentStmt = $pdo->prepare('
     SELECT q.group, q.display_text, q.max_points, cr.checklist_id, cr.questions_id, cr.result_yes, cr.result_no
     FROM checklist c
@@ -30,7 +26,6 @@ $getYearContentStmt->bindParam(':latestChecklistId', $latestChecklistId, PDO::PA
 $getYearContentStmt->execute();
 $yearContent = $getYearContentStmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch max_points for 'Yes' results
 $getMaxPointsStmt = $pdo->prepare('
     SELECT cr.questions_id, q.max_points
     FROM checklist_result cr
@@ -39,11 +34,9 @@ $getMaxPointsStmt = $pdo->prepare('
 ');
 $getMaxPointsStmt->bindParam(':latestChecklistId', $latestChecklistId, PDO::PARAM_INT);
 
-// Execute the statement and handle errors
 if ($getMaxPointsStmt->execute()) {
     $maxPointsResults = $getMaxPointsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Sum up max_points for 'Yes' results
     $sumMaxPoints = array_sum(array_column($maxPointsResults, 'max_points'));
 
     foreach ($maxPointsResults as $result) {
