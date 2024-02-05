@@ -2,20 +2,17 @@
 include 'header.php';
 include 'sidebar.php';
 
-// Fetch all questions from the questions table
 $getAllQuestionsStmt = $pdo->prepare('SELECT `group`, display_text, max_points, questions_id FROM questions ORDER BY `group`');
 $getAllQuestionsStmt->execute();
 $allQuestions = $getAllQuestionsStmt->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Loop through the submitted data and update the questions in the database
     for ($i = 0; $i < count($_POST['question_id']); $i++) {
         $questionId = $_POST['question_id'][$i];
         $group = $_POST['group'][$i];
         $displayText = $_POST['display_text'][$i];
         $maxPoints = $_POST['max_points'][$i];
 
-        // Update the group, display_text, and max_points in the questions table
         $updateQuestionStmt = $pdo->prepare('UPDATE questions SET `group` = :group, display_text = :displayText, max_points = :maxPoints WHERE questions_id = :questionId');
         $updateQuestionStmt->execute([
             'group' => $group,
