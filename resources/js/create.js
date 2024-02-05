@@ -1,4 +1,3 @@
-// JavaScript function to dynamically add more question fields
 function addQuestion() {
   var additionalQuestions = document.getElementById("additional_questions");
   var newQuestion = document.createElement("div");
