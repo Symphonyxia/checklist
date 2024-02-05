@@ -7,7 +7,6 @@ $selectedYear = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $selectedYear = $_POST['selectedYear'];
 
-    // Save the year in the checklist table
     $saveYearStmt = $pdo->prepare('INSERT INTO checklist (year) VALUES (:year) ON DUPLICATE KEY UPDATE year = :year');
     $saveYearStmt->execute(['year' => $selectedYear]);
 }
@@ -16,7 +15,6 @@ $getAllQuestionsStmt = $pdo->prepare('SELECT `group`, display_text, max_points, 
 $getAllQuestionsStmt->execute();
 $allQuestions = $getAllQuestionsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Sort questions by group
 usort($allQuestions, function ($a, $b) {
     return strcmp($a['group'], $b['group']);
 });
@@ -66,7 +64,6 @@ usort($allQuestions, function ($a, $b) {
                                         </td>
                                     </tr>
                                 <?php
-                                    // Move the hidden input inside the loop to capture each question ID
                                     echo '<input type="hidden" name="questions_id[]" value="' . $question['questions_id'] . '">';
                                 }
                                 ?>
@@ -90,7 +87,7 @@ usort($allQuestions, function ($a, $b) {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(function() {
             document.getElementById('saveForm').submit();
-        }, 1000); // 1 minute in milliseconds
+        }, 1000);
     });
 
     function submitForm() {
