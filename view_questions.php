@@ -2,22 +2,27 @@
 include 'header.php';
 include 'sidebar.php';
 
-
+// Set the number of items per page
 $itemsPerPage = 1;
 
+// Get the current page from the URL parameter, default to 1
 $currentChecklistPage = isset($_GET['checklist_page']) ? (int)$_GET['checklist_page'] : 1;
 
+// Calculate the offset based on the current page and items per page
 $offset = ($currentChecklistPage - 1) * $itemsPerPage;
 
+// Query the total count of distinct checklist IDs
 $getTotalDistinctChecklistIdsStmt = $pdo->query('SELECT COUNT(DISTINCT checklist_id) FROM checklist');
 $totalDistinctChecklistIds = $getTotalDistinctChecklistIdsStmt->fetchColumn();
 
+// Query distinct checklist IDs with pagination
 $getDistinctChecklistIdsStmt = $pdo->prepare('SELECT DISTINCT checklist_id FROM checklist ORDER BY checklist_id LIMIT :offset, :itemsPerPage');
 $getDistinctChecklistIdsStmt->bindParam(':offset', $offset, PDO::PARAM_INT);
 $getDistinctChecklistIdsStmt->bindParam(':itemsPerPage', $itemsPerPage, PDO::PARAM_INT);
 $getDistinctChecklistIdsStmt->execute();
 $distinctChecklistIds = $getDistinctChecklistIdsStmt->fetchAll(PDO::FETCH_COLUMN);
 
+// Calculate total pages for pagination
 $totalChecklistPages = ceil($totalDistinctChecklistIds / $itemsPerPage);
 ?>
 
@@ -25,6 +30,7 @@ $totalChecklistPages = ceil($totalDistinctChecklistIds / $itemsPerPage);
     <?php foreach ($distinctChecklistIds as $checklistId) : ?>
         <div>
             <?php
+            // Fetch content for each checklist ID
             $getChecklistContentStmt = $pdo->prepare('
                 SELECT q.group, q.display_text, q.max_points, cr.checklist_id, cr.questions_id, cr.result_yes, cr.result_no, c.year
                 FROM checklist_result cr
@@ -81,6 +87,7 @@ $totalChecklistPages = ceil($totalDistinctChecklistIds / $itemsPerPage);
 
 
 
+    <!-- Pagination links for checklist IDs -->
 <div class="pagination-container">
     <ul class="pagination">
         <?php for ($i = 1; $i <= $totalChecklistPages; $i++) : ?>
