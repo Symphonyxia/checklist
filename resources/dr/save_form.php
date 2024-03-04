@@ -11,9 +11,7 @@ if (isset($_POST['addform'])) {
         header("Location: ../../create.php");
         exit();
     }
-
     $insertQuestionStmt = $pdo->prepare('INSERT INTO questions (`group`, `display_text`, `max_points`) VALUES (:group, :display_text, :max_points)');
-
     try {
 
 

@@ -1,6 +1,16 @@
 <?php
 include '../../header.php';
 
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $selectedYear = $_POST['selectedYear'];
+
+    $saveYearStmt = $pdo->prepare('INSERT INTO checklist (year) VALUES (:year) ON DUPLICATE KEY UPDATE year = :year');
+    $saveYearStmt->execute(['year' => $selectedYear]);
+}
+
+
 $getLatestChecklistIdStmt = $pdo->query('SELECT MAX(checklist_id) AS latest_id FROM checklist');
 $latestChecklistId = $getLatestChecklistIdStmt->fetchColumn();
 
