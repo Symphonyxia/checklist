@@ -18,6 +18,7 @@ require_once('boot.php');
     <link rel="stylesheet" href="resources/css/edit.css">
     <link rel="stylesheet" href="resources/css/view.css">
 
+    <link rel="icon" type="image/x-icon" href="resources/img/iloilo.png">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
 
@@ -67,7 +68,6 @@ if (isset($_SESSION['error'])) {
             <i class='fas fa-exclamation-triangle'></i> " . $_SESSION['error'] . "
           </div>";
 
-    // unset error
     unset($_SESSION['error']);
 }
 
@@ -76,7 +76,6 @@ if (isset($_SESSION['success'])) {
             <i class='fas fa-check-circle'></i> " . $_SESSION['success'] . "
           </div>";
 
-    // unset success
     unset($_SESSION['success']);
 }
 ?>

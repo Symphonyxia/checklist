@@ -1,15 +1,8 @@
 <?php
 include 'header.php';
 include 'sidebar.php';
-
 $selectedYear = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $selectedYear = $_POST['selectedYear'];
-
-    $saveYearStmt = $pdo->prepare('INSERT INTO checklist (year) VALUES (:year) ON DUPLICATE KEY UPDATE year = :year');
-    $saveYearStmt->execute(['year' => $selectedYear]);
-}
 
 $getAllQuestionsStmt = $pdo->prepare('SELECT `group`, display_text, max_points, questions_id FROM questions');
 $getAllQuestionsStmt->execute();
@@ -25,12 +18,12 @@ usort($allQuestions, function ($a, $b) {
         <div class="card col-lg-12">
             <div class="card-body">
                 <div class="">
-                    <form method="post" action="" class="saveForm" id="saveForm">
+                <form method="post" action="resources/dr/submit_results.php" class="submitForm">
+                    <div class="saveForm" id="saveForm">
                         <label for="yearInput">Title:</label>
                         <input type="text" id="yearInput" name="selectedYear" value="<?php echo htmlspecialchars($selectedYear); ?>">
-                    </form>
+</div>
 
-                    <form method="post" action="resources/dr/submit_results.php" class="submitForm">
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -81,15 +74,6 @@ usort($allQuestions, function ($a, $b) {
 </article>
 
 <script>
-    let timeoutId;
-
-    document.getElementById('yearInput').addEventListener('input', function() {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(function() {
-            document.getElementById('saveForm').submit();
-        }, 1000);
-    });
-
     function submitForm() {
         document.querySelector('.submitForm').submit();
     }

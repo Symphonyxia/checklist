@@ -26,6 +26,11 @@ $getYearContentStmt->bindParam(':latestChecklistId', $latestChecklistId, PDO::PA
 $getYearContentStmt->execute();
 $yearContent = $getYearContentStmt->fetchAll(PDO::FETCH_ASSOC);
 
+$groupedQuestions = [];
+foreach ($yearContent as $content) {
+    $groupedQuestions[$content['group']][] = $content;
+}
+
 $getMaxPointsStmt = $pdo->prepare('
     SELECT cr.questions_id, q.max_points
     FROM checklist_result cr
@@ -69,7 +74,7 @@ if ($getMaxPointsStmt->execute()) {
 
 
 <article class="my-article">
-    <?php if (!empty($yearContent)) : ?>
+    <?php if (!empty($groupedQuestions)) : ?>
         <div>
             <form method="post" action="">
                 <br>
@@ -83,20 +88,18 @@ if ($getMaxPointsStmt->execute()) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php
-                        $currentGroup = null;
-                        foreach ($yearContent as $content) {
-                            if ($currentGroup !== $content['group']) {
-                                echo '<tr><td colspan="3"><strong>' . htmlspecialchars($content['group']) . '</strong></td></tr>';
-                                $currentGroup = $content['group'];
-                            }
-                        ?>
+                        <?php foreach ($groupedQuestions as $group => $questions) : ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($content['display_text']); ?></td>
-                                <td><?php echo ($content['result_yes'] === '0' || $content['result_yes'] === 'No') ? '' : 'Yes'; ?></td>
-                                <td><?php echo ($content['result_no'] === '0' || $content['result_no'] === 'No') ? '' : 'No'; ?></td>
+                                <td colspan="3"><strong><?php echo htmlspecialchars($group); ?></strong></td>
                             </tr>
-                        <?php } ?>
+                            <?php foreach ($questions as $content) : ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($content['display_text']); ?></td>
+                                    <td><?php echo ($content['result_yes'] === '0' || $content['result_yes'] === 'No') ? '' : 'Yes'; ?></td>
+                                    <td><?php echo ($content['result_no'] === '0' || $content['result_no'] === 'No') ? '' : 'No'; ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endforeach; ?>
                         <tr>
                             <td><strong>TOTAL POINT SCORE: </strong></td>
                             <td><strong><?php echo $sumMaxPoints; ?></strong></td>
@@ -109,7 +112,7 @@ if ($getMaxPointsStmt->execute()) {
             <br>
         </div>
     <?php else : ?>
-        <p>No data available for the latest checklist.</p>
+        <p style="font-weight: bold; text-align: center;">No data available for the latest checklist.</p>
     <?php endif; ?>
 </article>
 
