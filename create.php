@@ -1,8 +1,8 @@
 <?php
-include 'header.php';
-include 'sidebar.php';
-
+include 'includes/header.php';
+include 'includes/navbar.php';
 ?>
+
 <article class="my-article">
     <div class="title-search-block">
         <div class="title-block">
@@ -33,7 +33,7 @@ include 'sidebar.php';
                     <div class="card-body">
                         <div class="container">
 
-                            <form action="resources/dr/save_form.php" method="post">
+                            <form action="save_form.php" method="post">
                                 <input type="hidden" name="CSRFkey" value="<?php echo $key ?>" id="CSRFkey">
                                 <input type="hidden" name="token" value="<?php echo $token ?>" id="CSRFtoken">
                                 <div id="additional_questions"></div>
@@ -51,5 +51,7 @@ include 'sidebar.php';
     </section>
 
     <?php
-    include 'footer.php';
-    ?>
+include 'includes/scripts.php';
+include 'includes/footer.php';
+?>
+ 

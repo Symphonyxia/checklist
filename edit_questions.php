@@ -1,6 +1,6 @@
 <?php
-include 'header.php';
-include 'sidebar.php';
+include 'includes/header.php';
+include 'includes/navbar.php';
 
 $getAllQuestionsStmt = $pdo->prepare('SELECT `group`, display_text, max_points, questions_id FROM questions ORDER BY `group`');
 $getAllQuestionsStmt->execute();
@@ -24,6 +24,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 ?>
+
+<?php
+      if (isset($_SESSION['error'])) {
+        echo "
+                        <div class='alert alert-danger text-center'>
+                            <i class='fas fa-exclamation-triangle'></i> " . $_SESSION['error'] . "
+                        </div>
+                    ";
+
+
+        unset($_SESSION['error']);
+      }
+
+      if (isset($_SESSION['success'])) {
+        echo "
+                        <div class='alert alert-success text-center'>
+                            <i class='fas fa-check-circle'></i> " . $_SESSION['success'] . "
+                        </div>
+                    ";
+
+
+        unset($_SESSION['success']);
+      }
+      ?>
 
 <article class="my-article">
     <div class="title-search-block">
@@ -83,5 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </article>
 
 
-<?php include 'footer.php'; ?>
-
+<?php 
+include 'includes/scripts.php';
+include 'includes/footer.php';
+?>

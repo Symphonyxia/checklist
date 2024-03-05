@@ -1,6 +1,6 @@
 <?php
 
-include 'boot.php';
+include 'includes/boot.php';
 
 ?>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
@@ -33,7 +33,7 @@ include 'boot.php';
             
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title text-center">Register a new account</h5>
+                    <h5 class="card-title text-center text-danger">Register a new account</h5>
                     <form method="POST" action="code.php">
                         <div class="mb-3 row">
                             <label for="first_name" class="col-sm-3 col-form-label">First Name</label>
@@ -78,5 +78,5 @@ include 'boot.php';
                     </form>
                 </div>
                 <?php
-                include 'footer.php';
+                include 'includes/footer.php';
                 ?>

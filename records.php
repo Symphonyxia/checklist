@@ -1,54 +1,44 @@
 <?php
-include 'header.php';
-include 'sidebar.php';
+include 'includes/header.php';
+include 'includes/navbar.php';
 
-$getLatestChecklistIdStmt = $pdo->query('SELECT MAX(checklist_id) AS latest_id FROM checklist');
-$latestChecklistId = $getLatestChecklistIdStmt->fetchColumn();
 
-$getYearStmt = $pdo->prepare('SELECT year FROM checklist WHERE checklist_id = :latestChecklistId');
-$getYearStmt->bindParam(':latestChecklistId', $latestChecklistId, PDO::PARAM_INT);
+// Fetch checklist_id from the URL parameter
+$checklistId = isset($_GET['checklist_id']) ? (int) $_GET['checklist_id'] : null;
 
-if (!$getYearStmt->execute()) {
-    $errorInfo = $getYearStmt->errorInfo();
-    echo "Error fetching year: {$errorInfo[2]}<br>";
-}
+if ($checklistId) {
+    // Fetch checklist year
+    $getYearStmt = $pdo->prepare('SELECT year FROM checklist WHERE checklist_id = :checklistId');
+    $getYearStmt->bindParam(':checklistId', $checklistId, PDO::PARAM_INT);
 
-$year = $getYearStmt->fetchColumn();
-
-$getYearContentStmt = $pdo->prepare('
-    SELECT q.group, q.display_text, q.max_points, cr.checklist_id, cr.questions_id, cr.result_yes, cr.result_no
-    FROM checklist c
-    JOIN checklist_result cr ON c.checklist_id = cr.checklist_id
-    JOIN questions q ON cr.questions_id = q.questions_id
-    WHERE c.checklist_id = :latestChecklistId
-');
-$getYearContentStmt->bindParam(':latestChecklistId', $latestChecklistId, PDO::PARAM_INT);
-$getYearContentStmt->execute();
-$yearContent = $getYearContentStmt->fetchAll(PDO::FETCH_ASSOC);
-
-$groupedQuestions = [];
-foreach ($yearContent as $content) {
-    $groupedQuestions[$content['group']][] = $content;
-}
-
-$getMaxPointsStmt = $pdo->prepare('
-    SELECT cr.questions_id, q.max_points
-    FROM checklist_result cr
-    JOIN questions q ON cr.questions_id = q.questions_id
-    WHERE cr.checklist_id = :latestChecklistId AND cr.result_yes = \'Yes\'
-');
-$getMaxPointsStmt->bindParam(':latestChecklistId', $latestChecklistId, PDO::PARAM_INT);
-
-if ($getMaxPointsStmt->execute()) {
-    $maxPointsResults = $getMaxPointsStmt->fetchAll(PDO::FETCH_ASSOC);
-
-    $sumMaxPoints = array_sum(array_column($maxPointsResults, 'max_points'));
-
-    foreach ($maxPointsResults as $result) {
-        $questionId = $result['questions_id'];
-        $maxPoints = $result['max_points'];
+    if (!$getYearStmt->execute()) {
+        $errorInfo = $getYearStmt->errorInfo();
+        echo "Error fetching year: {$errorInfo[2]}<br>";
     }
 
+    $year = $getYearStmt->fetchColumn();
+
+    // Fetch questions associated with the checklist_id from the checklist_result table
+    $getYearContentStmt = $pdo->prepare('
+        SELECT q.group, q.display_text, q.max_points, cr.checklist_id, cr.questions_id, cr.result_yes, cr.result_no
+        FROM checklist_result cr
+        JOIN questions q ON cr.questions_id = q.questions_id
+        WHERE cr.checklist_id = :checklistId
+    ');
+    $getYearContentStmt->bindParam(':checklistId', $checklistId, PDO::PARAM_INT);
+    $getYearContentStmt->execute();
+    $yearContent = $getYearContentStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $groupedQuestions = [];
+    foreach ($yearContent as $content) {
+        $groupedQuestions[$content['group']][] = $content;
+    }
+
+    // Calculate total points and determine grade
+    $sumMaxPoints = 0;
+    foreach ($yearContent as $content) {
+        $sumMaxPoints += $content['max_points'];
+    }
 
     $grade = '';
     if ($sumMaxPoints >= 0 && $sumMaxPoints <= 40) {
@@ -66,54 +56,100 @@ if ($getMaxPointsStmt->execute()) {
     } elseif ($sumMaxPoints >= 91 && $sumMaxPoints <= 100) {
         $grade = 'Excellent';
     }
+    ?>
+
+    <style>
+           .print-visible {
+        display: none;
+    }
+
+        @media print {
+            .print-visible {
+            display: block !important;
+            }
+
+            body * {
+                visibility: visible;
+
+            }
+
+            table,
+            table * {
+                visibility: visible;
+            }
+
+            table {
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+        }
+    </style>
+    </style>
+
+    <article class="my-article">
+        <?php if (!empty($groupedQuestions)): ?>
+            <div>
+                <form method="post" action="">
+                <h5 class="print-visible"><strong>Form for <?php echo $year; ?></strong></h5>
+                            <?php echo $year; ?>
+                        </strong></h5>
+                    <br>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Result Yes</th>
+                                <th>Result No</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($groupedQuestions as $group => $questions): ?>
+                                <tr>
+                                    <td colspan="3"><strong>
+                                            <?php echo htmlspecialchars($group); ?>
+                                        </strong></td>
+                                </tr>
+                                <?php foreach ($questions as $content): ?>
+                                    <tr>
+                                        <td>
+                                            <?php echo htmlspecialchars($content['display_text']); ?>
+                                        </td>
+                                        <td>
+                                            <?php echo ($content['result_yes'] === '0' || $content['result_yes'] === 'No') ? '' : 'Yes'; ?>
+                                        </td>
+                                        <td>
+                                            <?php echo ($content['result_no'] === '0' || $content['result_no'] === 'No') ? '' : 'No'; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endforeach; ?>
+                            <tr>
+                                <td><strong>TOTAL POINT SCORE: </strong></td>
+                                <td><strong>
+                                        <?php echo $sumMaxPoints; ?>
+                                    </strong></td>
+                                <td colspan="2"><strong>
+                                        <?php echo $grade; ?>
+                                    </strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                </form>
+                <br>
+            </div>
+        <?php else: ?>
+            <p style="font-weight: bold; text-align: center;">No data available for the selected checklist.</p>
+        <?php endif; ?>
+    </article>
+
+    <?php
 } else {
-    $errorInfo = $getMaxPointsStmt->errorInfo();
+    // Handle case when checklist_id is not provided
+    echo "Checklist ID not provided.";
 }
 
+include 'includes/scripts.php';
+include 'includes/footer.php';
 ?>
-
-
-<article class="my-article">
-    <?php if (!empty($groupedQuestions)) : ?>
-        <div>
-            <form method="post" action="">
-                <br>
-                <h5><strong>Form for <?php echo $year; ?></strong></h5>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Result Yes</th>
-                            <th>Result No</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($groupedQuestions as $group => $questions) : ?>
-                            <tr>
-                                <td colspan="3"><strong><?php echo htmlspecialchars($group); ?></strong></td>
-                            </tr>
-                            <?php foreach ($questions as $content) : ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($content['display_text']); ?></td>
-                                    <td><?php echo ($content['result_yes'] === '0' || $content['result_yes'] === 'No') ? '' : 'Yes'; ?></td>
-                                    <td><?php echo ($content['result_no'] === '0' || $content['result_no'] === 'No') ? '' : 'No'; ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endforeach; ?>
-                        <tr>
-                            <td><strong>TOTAL POINT SCORE: </strong></td>
-                            <td><strong><?php echo $sumMaxPoints; ?></strong></td>
-                            <td colspan="2"><strong><?php echo $grade; ?> </strong></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <br>
-            </form>
-            <br>
-        </div>
-    <?php else : ?>
-        <p style="font-weight: bold; text-align: center;">No data available for the latest checklist.</p>
-    <?php endif; ?>
-</article>
-
-<?php include 'footer.php'; ?>

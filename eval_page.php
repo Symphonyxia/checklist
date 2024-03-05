@@ -1,6 +1,6 @@
 <?php
-include 'header.php';
-include 'sidebar.php';
+include 'includes/header.php';
+include 'includes/navbar.php';
 $selectedYear = '';
 
 
@@ -12,6 +12,30 @@ usort($allQuestions, function ($a, $b) {
     return strcmp($a['group'], $b['group']);
 });
 ?>
+
+<?php
+      if (isset($_SESSION['error'])) {
+        echo "
+                        <div class='alert alert-danger text-center'>
+                            <i class='fas fa-exclamation-triangle'></i> " . $_SESSION['error'] . "
+                        </div>
+                    ";
+
+
+        unset($_SESSION['error']);
+      }
+
+      if (isset($_SESSION['success'])) {
+        echo "
+                        <div class='alert alert-success text-center'>
+                            <i class='fas fa-check-circle'></i> " . $_SESSION['success'] . "
+                        </div>
+                    ";
+
+
+        unset($_SESSION['success']);
+      }
+      ?>
 
 <article class="my-article">
     <div class="title-search-block">
@@ -79,4 +103,7 @@ usort($allQuestions, function ($a, $b) {
     }
 </script>
 
-<?php include 'footer.php'; ?>
+<?php 
+include 'includes/scripts.php';
+include 'includes/footer.php';
+?>

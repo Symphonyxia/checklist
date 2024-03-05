@@ -1,5 +1,5 @@
 <?php
-include 'boot.php';
+include 'includes/boot.php';
 
 
 if (isset($_POST['register'])) {
