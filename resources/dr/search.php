@@ -1,6 +1,6 @@
 <?php
 ob_start();
-include '../../boot.php';
+include '../../includes/boot.php';
 
 if (isset($_POST['deleteQuestion'])) {
     $questionIdToDelete = $_POST['deleteQuestion'];
@@ -53,23 +53,10 @@ if (isset($_POST['updateform'])) {
                 'max_points' => $maxPoints[$key],
                 'question_id' => $questionId
             ]);
-
-            $updateChecklistResultStmt = $pdo->prepare('
-                UPDATE checklist_result
-                SET result_yes = :result_yes, result_no = :result_no
-                WHERE questions_id = :question_id
-            ');
-
-
-            $updateChecklistResultStmt->execute([
-                'result_yes' => $resultYes,
-                'result_no' => $resultNo,
-                'question_id' => $questionId
-            ]);
         }
 
         $pdo->commit();
-        $_SESSION['success'] = 'Questions and checklist results successfully updated.';
+        $_SESSION['success'] = 'Questions successfully updated.';
         header("Location: ../../edit_questions.php");
         exit();
     } catch (PDOException $e) {

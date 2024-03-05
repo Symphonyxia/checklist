@@ -1,5 +1,5 @@
 <?php
-include '../../boot.php';
+include '../../includes/boot.php';
 
 if (isset($_POST['login'])) {
     $email = $_POST['email'];
@@ -17,7 +17,7 @@ if (isset($_POST['login'])) {
 
             if (password_verify($password, $user['password'])) {
                 $_SESSION['user_id'] = $user['id'];
-                header("Location:../../dashboard.php");
+                header("Location:../../view_list.php");
                 exit();
             } else {
                 $_SESSION['error'] = 'Incorrect password';
