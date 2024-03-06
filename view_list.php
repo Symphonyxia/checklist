@@ -63,8 +63,8 @@ $totalPages = ceil($totalRows / $limit);
                     <table class="table table-bordered">
                         <thead>
                             <tr>
-                                <th class="text-center">Title</th>
-                                <th class="text-center">View</th>
+                                <th class="text-center" style="background-color:#f0a190">Title</th>
+                                <th class="text-center" style="background-color:#f0a190">View</th>
                             </tr>
                         </thead>
                         <tbody>
