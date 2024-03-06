@@ -8,7 +8,6 @@ require_once('boot.php');
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Checklist</title>
-    <link rel="stylesheet" type="text/css" href="resources/style.css">
     <link rel="stylesheet" type="text/css" href="resources/fontawesome-free-6.5.1-web/css/fontawesome.css">
 
     <link rel="stylesheet" type="text/css" href="resources/fontawesome-free-6.5.1-web/css/solid.css">
@@ -16,7 +15,6 @@ require_once('boot.php');
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
     <link rel="stylesheet" href="resources/css/edit.css">
-    <link rel="stylesheet" href="resources/css/view.css">
 
     <link rel="icon" type="image/x-icon" href="resources/img/iloilo.png">
 
