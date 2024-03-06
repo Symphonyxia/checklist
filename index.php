@@ -6,7 +6,7 @@ include 'includes/boot.php';
 
 <link rel="stylesheet" type="text/css" href="resources/css/style.css">
 
-<div class="container">
+<div class="container-fluid bg-image">
   <h1 class="text-center" style="margin-top:30px; color: red;">Login Page</h1>
   <hr>
   <div class="row justify-content-md-center">
