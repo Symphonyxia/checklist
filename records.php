@@ -72,7 +72,7 @@ if ($checklistId) {
         echo "Error fetching year: {$errorInfo[2]}<br>";
     }
     ?>
-
+<div class="container">
     <article class="my-article">
         <?php if (!empty($groupedQuestions)): ?>
             <div>
@@ -114,7 +114,7 @@ if ($checklistId) {
             <p style="font-weight: bold; text-align: center;">No data available for the selected checklist.</p>
         <?php endif; ?>
     </article>
-
+    </div>
 <?php
 } else {
     // Handle case when checklist_id is not provided

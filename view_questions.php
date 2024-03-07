@@ -25,6 +25,7 @@ if ($checklistId) {
     $checklistContent = $getChecklistContentStmt->fetchAll(PDO::FETCH_ASSOC);
     ?>
 
+<div class="container">
     <article class="my-article">
         <div>
             <?php if (!empty($checklistContent)) : ?>
@@ -62,7 +63,8 @@ if ($checklistId) {
             <?php endif; ?>
         </div>
     </article>
-
+    </div>
+    
 <?php
 } else {
     // Handle case when checklist_id is not provided

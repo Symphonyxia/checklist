@@ -54,7 +54,7 @@ $totalPages = ceil($totalRows / $limit);
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
-
+<br>
     <section class="example">
         <div class="card card-body col-lg-12">
             <div class="card-body">
