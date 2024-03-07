@@ -27,6 +27,7 @@ $totalRows = count($results);
 $totalPages = ceil($totalRows / $limit);
 ?>
 
+<div class="container">
 <article class="content items-list-page">
     <div class="title-search-block">
         <div class="title-block">
@@ -109,7 +110,7 @@ $totalPages = ceil($totalRows / $limit);
         </ul>
     </nav>
 </article>
-
+</div>
 <?php
 include 'includes/scripts.php';
 include 'includes/footer.php';

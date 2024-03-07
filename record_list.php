@@ -26,7 +26,7 @@ $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $totalRows = count($results);
 $totalPages = ceil($totalRows / $limit);
 ?>
-
+<div class="container">
 <article class="content items-list-page">
     <div class="title-search-block">
         <div class="title-block">
@@ -59,7 +59,7 @@ $totalPages = ceil($totalRows / $limit);
         <div class="card card-body col-lg-12">
             <div class="card-body">
                 <br>
-                <div class="d-flex justify-content-center"> <!-- Added this div -->
+                <div class="d-flex justify-content-center">
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -111,7 +111,7 @@ $totalPages = ceil($totalRows / $limit);
         </ul>
     </nav>
 </article>
-
+</div>
 <?php 
 include 'includes/scripts.php';
 include 'includes/footer.php';

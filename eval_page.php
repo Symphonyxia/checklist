@@ -36,7 +36,7 @@ usort($allQuestions, function ($a, $b) {
         unset($_SESSION['success']);
       }
       ?>
-
+<div class="container">
 <article class="my-article">
     <div class="title-search-block">
         <div class="card col-lg-12">
@@ -102,7 +102,7 @@ usort($allQuestions, function ($a, $b) {
         document.querySelector('.submitForm').submit();
     }
 </script>
-
+</div>
 <?php 
 include 'includes/scripts.php';
 include 'includes/footer.php';

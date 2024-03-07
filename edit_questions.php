@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         unset($_SESSION['success']);
       }
       ?>
-
+<div class="container">
 <article class="my-article">
     <div class="title-search-block">
         <div class="title-block">
@@ -105,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </article>
-
+</div>
 
 <?php 
 include 'includes/scripts.php';

@@ -3,6 +3,7 @@ include 'includes/header.php';
 include 'includes/navbar.php';
 ?>
 
+<div class="container">
 <article class="my-article">
     <div class="title-search-block">
         <div class="title-block">
@@ -49,7 +50,9 @@ include 'includes/navbar.php';
 
 
     </section>
+</article>
 
+    </div>
     <?php
 include 'includes/scripts.php';
 include 'includes/footer.php';
