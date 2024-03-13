@@ -6,7 +6,7 @@
 
       <img class="img-profile rounded-circle" src="resources/img/iloilo.png">
     </div>
-    <div class="sidebar-brand-text mx-1">Assessment <sup>Checklist</sup></div>
+    <div class="sidebar-brand-text mx-1">Assessment <span>Checklist</span></div>
   </a>
 
 
