@@ -37,7 +37,7 @@ include 'includes/navbar.php';
             </tbody>
         </table>
 
-
+ 
 </section>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -45,7 +45,9 @@ include 'includes/navbar.php';
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
 <script>
     $(document).ready(function () {
-        $('#recordstable').DataTable();
+        $('#recordstable').DataTable({
+            "scrollY": "300px" 
+        });
     });
 
     function printRecord(checklistId) {

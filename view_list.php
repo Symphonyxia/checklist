@@ -2,6 +2,7 @@
 include 'includes/header.php';
 include 'includes/navbar.php';
 ?>
+
 <br>
 <div class="container">
 
@@ -43,9 +44,12 @@ include 'includes/navbar.php';
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
 <script>
     $(document).ready(function () {
-        $('#recordstable').DataTable();
+        $('#recordstable').DataTable({
+            "scrollY": "300px" 
+        });
     });
 </script>
+
 
 <?php
 include 'includes/footer.php';
