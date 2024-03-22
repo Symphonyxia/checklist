@@ -42,6 +42,12 @@ include 'includes/navbar.php';
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+<style>
+    #recordstable_wrapper {
+        width: 100%;
+    }
+</style>
+
 <script>
     $(document).ready(function () {
         $('#recordstable').DataTable({
