@@ -6,7 +6,16 @@ $getAllQuestionsStmt = $pdo->prepare('SELECT `group`, display_text, max_points, 
 $getAllQuestionsStmt->execute();
 $allQuestions = $getAllQuestionsStmt->fetchAll(PDO::FETCH_ASSOC);
 
+
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if(isset($_POST['delete_question_id'])) {
+        $questionId = $_POST['delete_question_id'];
+        $deleteQuestionStmt = $pdo->prepare('DELETE FROM questions WHERE questions_id = :questionId');
+        $deleteQuestionStmt->execute(['questionId' => $questionId]);
+        exit; // Stop further execution after deletion
+    }
     for ($i = 0; $i < count($_POST['question_id']); $i++) {
         $questionId = $_POST['question_id'][$i];
         $group = $_POST['group'][$i];
@@ -111,3 +120,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 include 'includes/scripts.php';
 include 'includes/footer.php';
 ?>
+<script>
+    // JavaScript to handle deletion via AJAX
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteButtons = document.querySelectorAll('.delete-question');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const questionId = this.dataset.questionId;
+                const xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        // Remove the deleted row from the table
+                        const deletedRow = button.closest('tr');
+                        deletedRow.parentNode.removeChild(deletedRow);
+                        // Optionally, display success message
+                        alert('Question deleted successfully.');
+                    }
+                };
+                xhr.open('POST', window.location.href, true);
+                xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                xhr.send('delete_question_id=' + questionId);
+            });
+        });
+    });
+</script>
